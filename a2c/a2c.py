@@ -9,8 +9,10 @@ from baselines.common import set_global_seeds, explained_variance
 
 from baselines.a2c.utils import discount_with_dones
 from baselines.a2c.utils import Scheduler, find_trainable_variables
-from baselines.a2c.utils import cat_entropy, mse
+from baselines.a2c.utils import cat_entropy
 # from a2c import kfac
+
+from tensorflow import losses
 
 from pysc2.env import environment
 from pysc2.lib import actions as sc2_actions
@@ -136,7 +138,7 @@ class Model(object):
 
     #vf_mask[0:nscripts * nsteps] = R[0:nscripts * nsteps]
 
-    vf_loss = tf.reduce_mean(mse(vf_masked, TD_TARGET))
+    vf_loss = losses.mean_squared_error(tf.squeeze(train_model.vf), TD_TARGET)
     entropy_a = tf.reduce_mean(cat_entropy(train_model.pi))
     entropy_xy0 = tf.reduce_mean(cat_entropy(train_model.pi_xy0))
     entropy_xy1 = tf.reduce_mean(cat_entropy(train_model.pi_xy1))
